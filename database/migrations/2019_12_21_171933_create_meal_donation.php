@@ -19,6 +19,7 @@ class CreateMealDonation extends Migration
             $table->string('name',100);
             $table->string('quantity',100);
             $table->text('description');
+            $table->string('phone',100);
             $table->unsignedBigInteger('seat_id');
             $table->timestamps();
 

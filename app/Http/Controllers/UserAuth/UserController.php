@@ -10,6 +10,7 @@ use Validator;
 
 use App\Models\SeatCreateModel;
 use App\Models\ProfilePicEditModel;
+use App\Models\foundationmealModel;
 
 
 class UserController extends Controller 
@@ -161,6 +162,54 @@ return response()->json(['success'=>$success], $this-> successStatus);
         $profiledata=DB::table('profile')->where('user_id',$id)->orderby('created_at','desc')->first();
         
         return response()->json(['successSeat'=>$seatdata,'successProfile'=>$profiledata],$this-> successStatus);
+
+    }
+    public function foundationmeal(Request $request){
+
+        
+        $seat_idget = DB::Table('seat')->select('id')->where('host_id',Auth::id())->orderby('created_at','desc')->value('id');
+     
+
+        $meal = new foundationmealModel;
+        $meal->name    = $request->name;
+        $meal->quantity    = $request->quantity;
+        $meal->description    = $request->description;
+        $meal->seat_id    = $seat_idget;
+        $meal->phone=$request->phone;
+        
+        if($request->hasfile('image')){
+            $file=$request->file('image');
+            $extension= $file->getClientOriginalExtension();    //getting image extension
+            $fileName = time().'.'.$extension;
+            $file->move(public_path("/MealPics"),$fileName);
+            $photoURL=url('/MealPics/'.$fileName);
+            $meal->image= $photoURL;
+        }else
+        {
+            return $request;
+            $meal->image='';
+        }
+
+        $meal->save();
+        return response()->json($meal,200);
+
+
+            
+            // return response()->json(['url'=>$photoURL],200);
+    }
+
+    public function mealdetails(){
+
+      
+// $phoneNo = DB::Table('seat')->select('host_id')->orderby('created_at','desc')
+// ->value('host_id');
+
+    // $profilephone= DB::table('profile')->where('user_id', $phoneNo)->orderby('created_at', 'desc')->value('phone');     
+    
+     $meal=foundationmealModel::orderby('created_at','desc')->get();
+
+        //return response()->json($meal,200);
+        return response()->json($meal,200);
 
     }
 }
