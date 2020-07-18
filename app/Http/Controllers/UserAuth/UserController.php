@@ -172,6 +172,7 @@ return response()->json(['success'=>$success], $this-> successStatus);
 
         $meal = new foundationmealModel;
         $meal->name    = $request->name;
+        $meal->foundationName    = $request->foundationName;
         $meal->quantity    = $request->quantity;
         $meal->description    = $request->description;
         $meal->seat_id    = $seat_idget;

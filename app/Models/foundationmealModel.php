@@ -14,6 +14,7 @@ class foundationmealModel extends Model
     protected $fillable=[
     	'image',
     	'name',
+        'foundationName',
     	'quantity',
     	'description',
     	'seat_id',

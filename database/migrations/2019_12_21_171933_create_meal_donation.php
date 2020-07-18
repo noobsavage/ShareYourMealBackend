@@ -17,6 +17,7 @@ class CreateMealDonation extends Migration
             $table->bigIncrements('id');
             $table->string('image')->nullable();
             $table->string('name',100);
+            $table->string('foundationName',100);
             $table->string('quantity',100);
             $table->text('description');
             $table->string('phone',100);
