@@ -11,6 +11,8 @@ use Validator;
 use App\Models\SeatCreateModel;
 use App\Models\ProfilePicEditModel;
 use App\Models\foundationmealModel;
+use App\Models\SendRequestModel;
+
 
 
 class UserController extends Controller 
@@ -79,9 +81,10 @@ return response()->json(['success'=>$success], $this-> successStatus);
 
         //$seat->host_id = Auth::user()->id;
         $seat->host_id=Auth::id();
-
+        $seat->name=$request->name;
         $seat->longitude = $request->longitude;
         $seat->latitude  = $request->latitude;
+        $seat->placeName= $request->placeName;
         $seat->No_of_seat = $request->No_of_seat;
         $seat->time       = $request->time;
         $seat->status       = $request->status;
@@ -95,6 +98,15 @@ return response()->json(['success'=>$success], $this-> successStatus);
         $user = DB::table('seat')->where('host_id', Auth::id())->orderby('created_at', 'desc')->first();
         return response()->json(['success' => $user], $this-> successStatus);
     } 
+    
+    public function availableSeats()
+    {
+        $available=SeatCreateModel::orderby('created_at','desc')->get();
+
+        
+        return response()->json($available,200);
+    }
+
     public function SeatStatusUpdate(Request $request)
     {
         
@@ -202,10 +214,6 @@ return response()->json(['success'=>$success], $this-> successStatus);
     public function mealdetails(){
 
       
-// $phoneNo = DB::Table('seat')->select('host_id')->orderby('created_at','desc')
-// ->value('host_id');
-
-    // $profilephone= DB::table('profile')->where('user_id', $phoneNo)->orderby('created_at', 'desc')->value('phone');     
     
      $meal=foundationmealModel::orderby('created_at','desc')->get();
 
@@ -213,4 +221,94 @@ return response()->json(['success'=>$success], $this-> successStatus);
         return response()->json($meal,200);
 
     }
+    public function removeButton(){
+
+
+        $userStatus = DB::table('seat')->where('host_id', Auth::id())->orderby('created_at', 'desc')->get();
+        
+        $show=response()->json($userStatus,200);
+
+        if($userStatus->isEmpty()){
+
+        return response()->json(["success"=>"0"],200);
+    }
+    else
+    {
+        return response()->json(["success"=>"1"],200);
+    }
+    }
+
+    public function deleteSeat(Request $request, $id){
+
+        //$deleteSeat=DB::table('seat')->where('id', $id)->delete();
+        $st=SeatCreateModel::find($id);
+        $st->delete();
+
+        //return response()->json($st);
+        return response()->json(["success"=>"1"],200);
+    }
+
+     public function SendRequestForSeat(Request $request)
+    {
+        
+
+        $req = new SendRequestModel;
+
+        
+        $req->seat_id=$request->seat_id;
+        $req->consumer_id=Auth::id();
+        $req->host_id  = $request->host_id;
+        $req->requested_seat = $request->requested_seat;
+        $req->status  = $request->status;
+        $req->save();
+        return response()->json("Successfully Send Request",201);
+
+    }
+    public function SendRequestDetails(Request $request)
+    {
+    $userDetailsSeat = DB::table('request')->where('host_id', Auth::id())->orderby('created_at', 'desc')->get();
+
+    $consumeridget = DB::Table('request')->select('consumer_id')->where('host_id',Auth::id())->orderby('created_at','desc')->value('consumer_id');
+
+    $profilename = DB::Table('profile')->select('name')->where('user_id',$consumeridget)->orderby('created_at','desc')->value('name');
+
+
+    $statusValue = DB::Table('request')->select('status')->where('host_id',Auth::id())->orderby('created_at','desc')->value('status');
+
+
+    
+        return response()->json(["successDetails"=>$userDetailsSeat,"successName"=>$profilename,"statusValue"=>$statusValue],200);
+    }
+
+    public function updateSeatRequestStatus(Request $request)
+    {
+
+
+         
+        $seatRequestId = DB::table('request')->where('host_id', Auth::id())->orderby('created_at', 'desc')->pluck('id');
+
+         $seat= DB::table('request')->where('id', $seatRequestId)->update(['status' => 1]);
+
+        return response()->json(['success' => $seat], $this-> successStatus);
+
+    }
+
+    public function NotmorethanoneSeat(Request $request)
+    {
+        $results=SeatCreateModel::where('host_id',Auth::id())->where('status',1)->orderby('created_at', 'desc')->get();
+
+       $show=response()->json($results,200);
+
+        if($results->isEmpty()){
+
+        return response()->json(["success"=>"0"],200);
+    }
+    else
+    {
+        return response()->json(["success"=>"1"],200);
+    }
+
+    }
+
+
 }

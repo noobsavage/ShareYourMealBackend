@@ -15,17 +15,18 @@ class CreateRequest extends Migration
     {
         Schema::create('request', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('seat_id');
+            $table->integer('seat_id');
+            $table->integer('host_id');
             $table->unsignedBigInteger('consumer_id');
             $table->integer('requested_seat');
             $table->boolean('status')->default(false);
             $table->timestamps();
 
             //foreign
-            $table->foreign('seat_id')
-                 ->references('id')
-                 ->on('seat')
-                 ->onDelete('cascade');
+            // $table->foreign('seat_id')
+            //      ->references('id')
+            //      ->on('seat')
+            //      ->onDelete('cascade');
 
             //foreign
             $table->foreign('consumer_id')

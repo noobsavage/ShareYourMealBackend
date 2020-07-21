@@ -13,8 +13,10 @@ class SeatCreateModel extends Model
 
     protected $fillable=[
     	'host_id',
+        'name',
     	'longitude',
     	'latitude',
+        'placeName',
     	'No_of_seat',
     	'time',
     	'status',

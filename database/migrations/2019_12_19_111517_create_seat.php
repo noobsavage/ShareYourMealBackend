@@ -16,8 +16,10 @@ class CreateSeat extends Migration
         Schema::create('seat', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('host_id');
+            $table->string('name',100);
             $table->double('longitude',15,8);
             $table->double('latitude',15,8);
+            $table->string('placeName',100);
             $table->integer('No_of_seat');
             $table->string('time',100);
             $table->integer('status');
